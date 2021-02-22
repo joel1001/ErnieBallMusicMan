@@ -1,0 +1,962 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+/**
+ * Product media data template
+ *
+ * @var $block \Threekit\Connector\Block\Product\View\Gallery
+ */
+$_product = $block->getProduct();
+$helper = $this->helper('Threekit\Connector\Helper\Data');
+$tk_token = $helper->getConfig('threekitsec/general/threekit_token');
+$cdn_link = $helper->getConfig('threekitsec/general/threekit_cdn');
+$asset_id = $_product->getData('threekit_id');
+$ar_enabled = $_product->getData('ar_enabled');
+$product_name = $_product->getData('name');
+
+function arCheck($bool)
+{
+    if ($bool == 1) {
+        return 'false';
+    } else {
+        return 'false';
+    }
+}
+
+
+?>
+<style>
+    .product-threekit-media-center .page-title-wrapper{
+        display: none;
+    }
+    .product-threekit-media-center .gallery-placeholder{
+        width: 100%;
+    }
+    .product-threekit-media-center .columns {
+        width: 100%;
+    }
+    .product-threekit-media-center .column {
+        padding: 0;
+        display: flex; 
+        flex-direction: column;
+    }
+    .product-threekit-media-center .product-info-main{
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .product-threekit-media-center .product-info-main > span{
+        display: none;
+    }
+    .product-threekit-media-center .swatches-box{
+        width: 100%; 
+        display: flex; 
+        flex-direction: column;
+    }
+    
+    .product-threekit-media-center .swatches-menu{
+        justify-content: left;
+        align-items: center; 
+        height: 80px; 
+        display: flex; 
+        max-width: 100%; 
+        list-style: none;
+    }
+    .product-threekit-media-center .swatches-menu .item-img-container{
+        margin-right: 1%;
+    }
+    .product-threekit-media-center .swatches-imgs{
+        cursor: pointer; 
+        border-radius: 50%; 
+        width: 50px; 
+        height: 50px;
+    }
+    .product-threekit-media-center .swatches-imgs:hover {
+        width::80px;
+        height:55px;
+    }
+    .product-threekit-media-center .item-name-and-description{
+        justify-content: center;
+        display: flex; 
+        flex-direction: column; 
+        width: 39%;
+        margin-left: 1%;
+    }
+    .product-threekit-media-center .guitar-type-title{
+        font-weight:700; 
+        font-size: 17px;
+        margin: 0;
+    }
+    .product-threekit-media-center .guitar-type-description{
+        font-weight: normal;
+        margin:0;
+        font-size:14px;
+    }
+    .product-threekit-media-center ul{
+        margin: 0; 
+        padding: 0; 
+        justify-content: space-between; 
+        display: flex; 
+        max-width: 100%; 
+        list-style: none;
+    }
+    .product-threekit-media-center li{
+        cursor: pointer; 
+        display: flex; 
+        flex-direction: column;
+    }
+    .product-threekit-media-center .green-selection-line{
+        display: none;
+        cursor: pointer;
+        background-color: #bb9d60; 
+        width: 125%; 
+        height:10px; 
+        margin-top: 15px; 
+        margin-left: -10%;
+    }
+    .product-threekit-media-center .opt-selected .green-selection-line{
+        display: flex;
+    }
+    .product-threekit-media-center .column .product-info-main{
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .product-threekit-media-center .column .product-info-main .product-details-container{
+        width: 100%;
+    }
+    .product-threekit-media-center .column .product-info-main .box-tocart,
+    .product-threekit-media-center .column .product-info-main .box-tocart .fieldset
+    {
+        margin:0;
+    }
+    .product-threekit-media-center .column .product-info-main .box-tocart .fieldset .action.primary{
+        background-color: #bb9d60;
+        padding: 5px;
+    }
+    .product-threekit-media-center .column .product-info-main .box-tocart .fieldset .field .control .input-text{
+       height: 35px;
+       width: 40px;
+    }
+    .product-threekit-media-center .column .product-info-main .box-tocart .fieldset .field{
+        padding-bottom: 0;
+    }
+    .product-threekit-media-center .column .product-info-main .product-info-price{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between; 
+        align-items: center;
+    }
+    .product-threekit-media-center .column .product-info-main .product-info-price .product-info-stock-sku .product-helper-icons{
+        display: none;
+    }
+    .product-threekit-media-center .column .product-info-main .product-info-price .product-info-stock-sku .attribute{
+        display: none;
+    }
+    .product-threekit-media-center .column .product-info-main .product-info-price .product-info-stock-sku{
+        display: flex;
+        justify-content: space-between;
+        width: 15%;
+        align-items: center;
+    }
+    .product-threekit-media-center .column .product-info-main .product-info-price .product-info-stock-sku .product-details{
+        color: #bb9d60;
+        font-size: 12px;
+    }
+
+    .product-threekit-media-center .column .product-info-main .product-info-price i{
+        font-size: 25px;
+        cursor: pointer; 
+        width: 0%;
+    }
+    .product-threekit-media-center .column .product-info-main .product-info-price .price-box{
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+    }
+    .product-threekit-media-center .column .product-info-main .product-info-price .price-box img{
+        height:19px;
+        margin-right:20px;
+    }
+    .product-threekit-media-center .column .product-info-main .product-info-price .price-box i{
+        cursor: pointer;
+        font-size:16px;
+    }
+    .product-threekit-media-center .column .product-info-main .product-info-price .price-box .tk-buy-button{
+        font-size: 12px;
+        color: #FFF; 
+        background-color: #bb9d60;
+        box-shadow: none; 
+        margin-right: 15px;
+    }
+    .product-threekit-media-center .column .product-info-main .product-info-price .price-box span span {
+        font-size: 15px;
+        font-weight: 700;
+        line-height: 50px;
+        margin-right: 10px
+    }
+    .product-threekit-media-center .column .product-info-main .product-social-links{
+        width: 100%;
+        display: flex;
+        align-items:center;
+        justify-content:space-around;
+        height:50px;
+        margin-top: 0;
+    }
+    .product-threekit-media-center .column .product-info-main .product-social-links .product-addto-links{
+        width: 45%;
+        border-top-color:#E0E0E0; 
+        border-top-width:0.5px;
+        border-top-style:solid;
+    }
+    .product-threekit-media-center .column .product-info-main .product-social-links .choosed-on-menu{
+        display: flex; 
+        flex-direction: column; 
+        align-items: center;
+        height: 100%;
+    }
+    .product-threekit-media-center .column .product-info-main .product-social-links .choosed-on-menu span{
+        line-height: 17px; 
+        font-size: 11px; 
+        font-weight:900; 
+        color: #BEBEBE;
+    }
+    .product-threekit-media-center .column .product-info-main .product-social-links .choosed-on-menu .chosed-selection{
+        font-size: 23px;
+    }
+    .product-threekit-media-center .column .product-info-main .product-social-links .right-border-shadow{
+        width:45%; 
+        border-top-color:#E0E0E0; 
+        border-top-width:0.5px; 
+        border-top-style:solid
+    }
+    .product-threekit-media-center .column .product-info-main .product-add-form{
+        padding-bottom: 20px;
+        margin-right:15px;
+        width: fit-content;
+        height: fit-content;
+    }
+    .product-threekit-media-center .column .product-info-main .box-tocart .actions,
+    .product-threekit-media-center .column .product-info-main .box-tocart .button,
+    {
+        padding:0;
+    }
+    .product-threekit-media-center .column .product-info-main .box-tocart .action.tocart{
+        font-size: 14px;
+    }
+    .product-threekit-media-center .product.media{
+        width:70%;
+        height: 320px;
+    }
+    .product-threekit-media-center .product-full-width-section{
+        display: none;
+    }
+    .product-threekit-media-center .page-main-details{
+        display: none;
+    }
+    .product-threekit-media-center #maincontent{
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    /* .product-threekit-media-center #maincontent .banner{
+        background-image: url('https://source360-msa.azurewebsites.net/images/banner-image.png'); 
+        text-align: center; 
+        justify-content: center; 
+        display: flex; 
+        flex-direction: column;
+        width: 20%; 
+        margin-left:5%;
+        height: 545px;
+    } */
+    .product-threekit-media-center .breadcrumbs{
+        display: none;
+    }
+    @media (min-width: 768px){
+        .product-threekit-media-center .product.media {
+            width: 100% !important;
+        }
+    }
+    .product-threekit-media-center #threekitPlayer{
+        height: 100%;
+        position: absolute;
+        top: 82%;
+        z-index: -1;
+        background-color: transparent;
+    }
+    .product-threekit-media-center .threekit .logo___1S7LO{
+        display: none;
+    }
+    /* .product-threekit-media-center #maincontent .banner .banner-content{
+        margin: auto;
+        width: 80%;
+    }
+    .product-threekit-media-center #maincontent .banner .banner-content h6{
+        font-size:16px;
+        color: #FFFFFF;
+        margin-bottom: 1rem;
+    }
+    .product-threekit-media-center #maincontent .banner .banner-content i{
+        font-size: 20px;
+        color: #c29b61;
+        cursor: pointer;
+    }
+    .product-threekit-media-center #maincontent .banner .banner-content p{
+        font-size: 13px;
+        color: #FFFFFF;
+    } */
+
+</style>
+
+<script src="<?= $cdn_link ?>"></script>
+
+    <div class="gallery-placeholder _block-content-loading" data-gallery-role="gallery-placeholder"></>
+        <div data-role="loader" class="loading-mask">
+            <div class="loader">
+                <img src="<?= /* @escapeNotVerified */ $block->getViewFileUrl('images/loader-1.gif') ?>"
+                    alt="<?= /* @escapeNotVerified */ __('Loading...') ?>">
+            </div>
+        </div>
+    </div>
+
+<script type="text/x-magento-init">
+    {
+        "[data-gallery-role=gallery-placeholder]": {
+            "mage/gallery/gallery": {
+                "mixins":["magnifier/magnify"],
+                "magnifierOpts": <?= /* @escapeNotVerified */ $block->getMagnifier() ?>,
+                "data": <?= /* @escapeNotVerified */ $block->getGalleryImagesJson() ?>,
+                "options": {
+                    "nav": "<?= /* @escapeNotVerified */ $block->getVar("gallery/nav") ?>",
+                    "loop": <?= /* @escapeNotVerified */ $block->getVar("gallery/loop") ? 'true' : 'false' ?>,
+                    "keyboard": <?= /* @escapeNotVerified */ $block->getVar("gallery/keyboard") ? 'true' : 'false' ?>,
+                    "arrows": <?= /* @escapeNotVerified */ $block->getVar("gallery/arrows") ? 'true' : 'false' ?>,
+                    "allowfullscreen": <?= /* @escapeNotVerified */ $block->getVar("gallery/allowfullscreen") ? 'true' : 'false' ?>,
+                    "showCaption": <?= /* @escapeNotVerified */ $block->getVar("gallery/caption") ? 'true' : 'false' ?>,
+                    "width": "<?= /* @escapeNotVerified */ $block->getImageAttribute('product_page_image_medium', 'width') ?>",
+                    "thumbwidth": "<?= /* @escapeNotVerified */ $block->getImageAttribute('product_page_image_small', 'width') ?>",
+                    <?php if ($block->getImageAttribute('product_page_image_small', 'height') || $block->getImageAttribute('product_page_image_small', 'width')): ?>
+                        "thumbheight": <?php /* @escapeNotVerified */ echo $block->getImageAttribute('product_page_image_small', 'height')
+                        ?: $block->getImageAttribute('product_page_image_small', 'width'); ?>,
+                    <?php endif; ?>
+                    <?php if ($block->getImageAttribute('product_page_image_medium', 'height') || $block->getImageAttribute('product_page_image_medium', 'width')): ?>
+                        "height": <?php /* @escapeNotVerified */ echo $block->getImageAttribute('product_page_image_medium', 'height')
+                        ?: $block->getImageAttribute('product_page_image_medium', 'width'); ?>,
+                    <?php endif; ?>
+                    <?php if ($block->getVar("gallery/transition/duration")): ?>
+                        "transitionduration": <?= /* @escapeNotVerified */ $block->getVar("gallery/transition/duration") ?>,
+                    <?php endif; ?>
+                    "transition": "<?= /* @escapeNotVerified */ $block->getVar("gallery/transition/effect") ?>",
+                    "navarrows": <?= /* @escapeNotVerified */ $block->getVar("gallery/navarrows") ? 'true' : 'false' ?>,
+                    "navtype": "<?= /* @escapeNotVerified */ $block->getVar("gallery/navtype") ?>",
+                    "navdir": "<?= /* @escapeNotVerified */ $block->getVar("gallery/navdir") ?>"
+                },
+                "fullscreen": {
+                    "nav": "<?= /* @escapeNotVerified */ $block->getVar("gallery/fullscreen/nav") ?>",
+                    "loop": <?= /* @escapeNotVerified */ $block->getVar("gallery/fullscreen/loop") ? 'true' : 'false' ?>,
+                    "navdir": "<?= /* @escapeNotVerified */ $block->getVar("gallery/fullscreen/navdir") ?>",
+                    "navarrows": <?= /* @escapeNotVerified */ $block->getVar("gallery/fullscreen/navarrows") ? 'true' : 'false' ?>,
+                    "navtype": "<?= /* @escapeNotVerified */ $block->getVar("gallery/fullscreen/navtype") ?>",
+                    "arrows": <?= /* @escapeNotVerified */ $block->getVar("gallery/fullscreen/arrows") ? 'true' : 'false' ?>,
+                    "showCaption": <?= /* @escapeNotVerified */ $block->getVar("gallery/fullscreen/caption") ? 'true' : 'false' ?>,
+                    <?php if ($block->getVar("gallery/fullscreen/transition/duration")): ?>
+                        "transitionduration": <?= /* @escapeNotVerified */ $block->getVar("gallery/fullscreen/transition/duration") ?>,
+                    <?php endif; ?>
+                    "transition": "<?= /* @escapeNotVerified */ $block->getVar("gallery/fullscreen/transition/effect") ?>"
+                },
+                "breakpoints": <?= /* @escapeNotVerified */ $block->getBreakpoints() ?>
+            }
+        }
+    }
+</script>
+
+
+<!--Fix for jumping content. Loader must be the same size as gallery.-->
+<script>
+    var config = {
+            "width": <?= /* @escapeNotVerified */ $block->getImageAttribute('product_page_image_medium', 'width') ?>,
+            "thumbheight": <?php /* @escapeNotVerified */ echo $block->getImageAttribute('product_page_image_small', 'height')
+                        ?: $block->getImageAttribute('product_page_image_small', 'width'); ?>,
+            "navtype": "<?= /* @escapeNotVerified */ $block->getVar("gallery/navtype") ?>",
+            "height": <?= /* @escapeNotVerified */ $block->getImageAttribute('product_page_image_medium', 'height') ?>
+        },
+        thumbBarHeight = 0,
+        loader = document.querySelectorAll('[data-gallery-role="gallery-placeholder"] [data-role="loader"]')[0];
+
+    if (config.navtype === 'horizontal') {
+        thumbBarHeight = config.thumbheight;
+    }
+
+    loader.style.paddingBottom = ( config.height / config.width * 100) + "%";
+</script>
+
+<?php if ($asset_id != null) { ?>
+
+    <script type="text/x-magento-init">
+    {
+        "[data-gallery-role=gallery-placeholder]": {
+            "mage/gallery/gallery": {
+                "mixins":["magnifier/magnify"],
+                "magnifierOpts": <?= /* @escapeNotVerified */ $block->getMagnifier() ?>,
+                "data": <?= /* @escapeNotVerified */ $block->getGalleryImagesJson() ?>,
+                "options": {
+                    "click": false,
+                    "swipe": false,
+                    "nav": "<?= /* @escapeNotVerified */ $block->getVar("gallery/nav") ?>",
+                    "loop": <?= /* @escapeNotVerified */ $block->getVar("gallery/loop") ? 'true' : 'false' ?>,
+                    "keyboard": <?= /* @escapeNotVerified */ $block->getVar("gallery/keyboard") ? 'true' : 'false' ?>,
+                    "arrows": <?= /* @escapeNotVerified */ $block->getVar("gallery/arrows") ? 'true' : 'false' ?>,
+                    "allowfullscreen": false,
+                    "showCaption": <?= /* @escapeNotVerified */ $block->getVar("gallery/caption") ? 'true' : 'false' ?>,
+                    "width": "<?= /* @escapeNotVerified */ $block->getImageAttribute('product_page_image_medium', 'width') ?>",
+                    "thumbwidth": "<?= /* @escapeNotVerified */ $block->getImageAttribute('product_page_image_small', 'width') ?>",
+                    <?php if ($block->getImageAttribute('product_page_image_small', 'height') || $block->getImageAttribute('product_page_image_small', 'width')): ?>
+                        "thumbheight": <?php /* @escapeNotVerified */ echo $block->getImageAttribute('product_page_image_small', 'height')
+                        ?: $block->getImageAttribute('product_page_image_small', 'width'); ?>,
+                    <?php endif; ?>
+                    <?php if ($block->getImageAttribute('product_page_image_medium', 'height') || $block->getImageAttribute('product_page_image_medium', 'width')): ?>
+                        "height": <?php /* @escapeNotVerified */ echo $block->getImageAttribute('product_page_image_medium', 'height')
+                        ?: $block->getImageAttribute('product_page_image_medium', 'width'); ?>,
+                    <?php endif; ?>
+                    <?php if ($block->getVar("gallery/transition/duration")): ?>
+                        "transitionduration": <?= /* @escapeNotVerified */ $block->getVar("gallery/transition/duration") ?>,
+                    <?php endif; ?>
+                    "transition": "<?= /* @escapeNotVerified */ $block->getVar("gallery/transition/effect") ?>",
+                    "navarrows": <?= /* @escapeNotVerified */ $block->getVar("gallery/navarrows") ? 'true' : 'false' ?>,
+                    "navtype": "<?= /* @escapeNotVerified */ $block->getVar("gallery/navtype") ?>",
+                    "navdir": "<?= /* @escapeNotVerified */ $block->getVar("gallery/navdir") ?>"
+                },
+                "fullscreen": {
+                    "nav": "<?= /* @escapeNotVerified */ $block->getVar("gallery/fullscreen/nav") ?>",
+                    "loop": <?= /* @escapeNotVerified */ $block->getVar("gallery/fullscreen/loop") ? 'true' : 'false' ?>,
+                    "navdir": "<?= /* @escapeNotVerified */ $block->getVar("gallery/fullscreen/navdir") ?>",
+                    "navarrows": <?= /* @escapeNotVerified */ $block->getVar("gallery/fullscreen/navarrows") ? 'true' : 'false' ?>,
+                    "navtype": "<?= /* @escapeNotVerified */ $block->getVar("gallery/fullscreen/navtype") ?>",
+                    "arrows": <?= /* @escapeNotVerified */ $block->getVar("gallery/fullscreen/arrows") ? 'true' : 'false' ?>,
+                    "showCaption": <?= /* @escapeNotVerified */ $block->getVar("gallery/fullscreen/caption") ? 'true' : 'false' ?>,
+                    <?php if ($block->getVar("gallery/fullscreen/transition/duration")): ?>
+                        "transitionduration": <?= /* @escapeNotVerified */ $block->getVar("gallery/fullscreen/transition/duration") ?>,
+                    <?php endif; ?>
+                    "transition": "<?= /* @escapeNotVerified */ $block->getVar("gallery/fullscreen/transition/effect") ?>"
+                },
+                "breakpoints": <?= /* @escapeNotVerified */ $block->getBreakpoints() ?>
+            }
+        }
+    }
+</script>
+
+
+<!--Fix for jumping content. Loader must be the same size as gallery.-->
+<script>
+    var config = {
+            "width": <?= /* @escapeNotVerified */ $block->getImageAttribute('product_page_image_medium', 'width') ?>,
+            "thumbheight": <?php /* @escapeNotVerified */ echo $block->getImageAttribute('product_page_image_small', 'height')
+                        ?: $block->getImageAttribute('product_page_image_small', 'width'); ?>,
+            "navtype": "<?= /* @escapeNotVerified */ $block->getVar("gallery/navtype") ?>",
+            "height": <?= /* @escapeNotVerified */ $block->getImageAttribute('product_page_image_medium', 'height') ?>
+        },
+        thumbBarHeight = 0,
+        loader = document.querySelectorAll('[data-gallery-role="gallery-placeholder"] [data-role="loader"]')[0];
+
+    if (config.navtype === 'horizontal') {
+        thumbBarHeight = config.thumbheight;
+    }
+
+    loader.style.paddingBottom = ( config.height / config.width * 100) + "%";
+</script>
+
+    <div id="threekit-player" style='height: 100%'></div>
+        <script type="text/javascript">
+            require(["jquery", "mage/gallery/gallery"], function($) {
+            // A $( document ).ready() block
+            //here start customized UI
+        
+
+        var tkPlayer = document.getElementById("threekit-player");
+        // player - onMouseUp - parentNode - unfocus
+        // tkPlayer.classList.add("fotorama__select");
+
+        // tkPlayer.onfocus="this.blur()";
+
+        // $('[data-gallery-role=gallery-placeholder]').on('mousedown', function(event) {
+        // // do your magic
+        //     event.preventDefault();
+        // });
+
+
+        $('[data-gallery-role=gallery-placeholder]').on('gallery:loaded', function () {
+
+            // var api = $(this).data('gallery');
+
+            // api.fotorama.data.push(
+            //     {
+            //         html: tkPlayer,
+            //         thumb: "https://i.imgur.com/bIukibY.png"
+            // });
+
+            window.threekitPlayer({
+            authToken: "<?= $tk_token ?>",
+            el: tkPlayer,
+            productId: "<?= $asset_id ?>",
+            showAR: <?= arCheck($ar_enabled)?>
+            })
+            .then(function() {
+                var tkPlayer = document.getElementById("threekit-player");
+                $(".fotorama-item").remove();
+
+    const initialSettings = {
+      el: tkPlayer,
+      authToken: "<?= $tk_token ?>",
+      assetId: "<?= $asset_id ?>",
+      showAR: <?= arCheck($ar_enabled)?>
+    };
+
+    let player;
+    let attributes;
+    // A $( document ).ready() block
+    //here start customized UI
+    $(document).ready(function () {
+      $('.product-info-stock-sku').append("<i class='far fa-angle-left home-location'></i>");
+      $('.product-info-stock-sku').append("<span class='product-details'>Product Details </span>");
+      $('.product-info-price').after("<div class='product-details-container'></div>");
+      //go back button
+      $('.home-location').click(function () {
+        window.location.href = 'https://dev-shop.ernieball.com/';
+      });
+
+      $('.product-add-form').css({'height': 'fit-content', 'width': 'fit-content'});
+
+      $('.price-box').prepend("<img src='https://source360-msa.azurewebsites.net/images/sting-ray-logo.png'></img>");
+
+      $('.price-box').append($('.product-add-form'));
+      $('.price-box').append("<i class='fas fa-share-alt'></i>");
+      //social media animation
+      $('.fa-share-alt').click(function () {
+        $('.fa-share-alt').append("<div class='txt-copied-box' style='right: 25%; top:33%; margin:auto; justify-content: center; align-items: center; display: flex; position:absolute; background-color: #90EE90; width: 30px; height: 25px; boreder-radius: 1px solid #FFF'><i class='fab fa-facebook-square' style='color:#3b5998'></i></div>")
+        setTimeout(
+          function () {
+            $('.txt-copied-box').remove();
+          }, 5000);
+        $('fa-share-alt').on('click');
+      });
+
+      $('.product-social-links').append("<div class='choosed-on-menu'><span class='choose-text'>CHOOSE YOUR</span><span class='chosed-selection'>COLOR</span></div>");
+      $('.product-social-links').append("<div class='right-border-shadow'><ul></ul></div>");
+    //   $('#maincontent').append(
+    //     "<div class='banner'>" +
+    //     "<div class='banner-content'>" +
+    //     "<h6>THE BODY SHOP</h6>" +
+    //     "<i class='fal fa-ellipsis-h'></i>" +
+    //     "<p>Lorem ipsum dolor sit amet consectetur adipiscing, elit orci ad arcu nec suspendisse, aliquam in tortor habitasse conubiat.</p>" +
+    //     "<i class='fab fa-youtube'></i>" +
+    //     "</div>" +
+    //     "</div>");
+    //   $('.fa-youtube').click(function () {
+    //     window.open(
+    //       'https://www.youtube.com/watch?v=oQs_90DALkMo',
+    //       '_blank'
+    //     );
+    //   });
+    });
+
+    initializePlayer(initialSettings);
+
+
+
+
+    /******************************************/
+    /* Function to start building the UI      */
+    /******************************************/
+    function buildCustomUI() {
+      getAttributesData().then((result) => {
+        localStorage.setItem('parentTitle', '')
+
+        attributes = result;
+        const firstAttributeValues = attributes[Object.keys(attributes)[0]];
+        let swatchItemImg = '';
+        let itemMenu = '';
+        let productDetails = '';
+        let keyAttributes = Object.keys(attributes);
+
+        firstAttributeValues.values.forEach(function (item) {
+          swatchItemImg +=
+            `<div class='item-img-container' 
+                data-type-title='`+ (item.typeTitle) +
+            `' data-type-description='` + (item.typeDescription) + 
+            `' data-type-prices='` + (item.typePrices? item.typePrices : '0') + `'>
+                <img class='swatches-imgs' data-type-attibute= `+ keyAttributes[0] +
+            ` data-type-value='` + item.value +
+            `' src='` + item.image + `'></img>
+              </div>`;
+
+        });
+        keyAttributes.forEach(function (key, index) {
+
+            itemMenu += `<li class= 'attribute-menu` + (index === 0 ? ' opt-selected' : '') + `' data-type-attribute-name='` + key + `'>
+                            <span>` + key + ` </span>
+                            <span class='green-selection-line'></span>
+                        </li>`
+            productDetails += 
+            `<li>
+                <div>
+                    <div>
+                    </div>
+                    <div>
+                    </div>
+                </div>
+            </li>` 
+        });
+
+        //first thing to customize is the menu
+        $('.columns').children().append(
+        "<div class='swatches-box'>" +
+            "<div class='swatches-menu'>" +
+                swatchItemImg  +
+                "<div class='item-name-and-description'>" +
+                    "<h6 class='guitar-type-title'>" + (firstAttributeValues.values[0].typeTitle ? firstAttributeValues.values[0].typeTitle : 'No title found' + "</h6>") +
+                    "<p class='guitar-type-description'>" + (firstAttributeValues.values[0].typeDescription ? firstAttributeValues.values[0].typeDescription : 'Description Not found' + "</p>") +
+                "</div>" +
+            "</div>" +
+            "<div class='options-box'>" +
+                "<ul>" +
+                    itemMenu +
+                "</ul>" +
+            "</div>" +
+        "</div>"
+        );
+
+        //on click menu color option default. functions when round images pressed
+        eventHandler();
+
+        $('.attribute-menu').click(function () {
+            $('.attribute-menu').removeClass('opt-selected');
+            let swatchItemImg = '';
+            let attribute = attributes[$(this).attr('data-type-attribute-name')].label;
+            attributes[$(this).addClass('opt-selected')]
+            attributes[$(this).attr('data-type-attribute-name')].values.forEach(function (item) {
+            swatchItemImg +=
+            `<div class='item-img-container' 
+                    data-type-title='`+ (item.typeTitle ? item.typeTitle : 'No title found') +
+                `' data-type-description='` + (item.typeDescription? item.typeDescription : 'Description Not found') + 
+                `' data-type-prices='` + (item.typePrices? item.typePrices : '0') + `'>
+                    <img class='swatches-imgs' data-type-attibute='`+ attribute +
+                `' data-type-value='` + item.value +
+                `' src='` + item.image + `'></img> 
+              </div>`
+              var borderLinesWidth = attribute.replace(/\s+/g, '').length;
+              borderLinesWidth = 50 - borderLinesWidth +'%';
+              $('.product-addto-links').width(borderLinesWidth);
+              $('.right-border-shadow').width(borderLinesWidth);
+              $('.chosed-selection').text(attribute);
+          });
+            
+            $('.swatches-menu').html(swatchItemImg);
+          eventHandler();
+          $('.item-name-and-description').remove();
+            $('.guitar-type-title').text("");
+            $('.guitar-type-description').text("");
+            $('.swatches-menu').append(`<div class='item-name-and-description'> 
+                <h6 class='guitar-type-title'> `+ (attributes[$(this).attr('data-type-attribute-name')].values[0].typeTitle)+ `</h6>
+                <p class='guitar-type-description'> `+ (attributes[$(this).attr('data-type-attribute-name')].values[0].typeDescription)+` </p>
+            </div>`)
+        });
+
+      });
+    }
+    function eventHandler() {
+      $('.item-img-container').click(function () {
+        // $('.guitar-type-title').text($(this).attr('data-type-title'));
+        // $('.guitar-type-description').text($(this).attr('data-type-attibute'));
+      });
+      $('.swatches-imgs').click(function () {
+        const parentTitle= $(this).parent()[0].attributes[1].nodeValue ? $(this).parent()[0].attributes[1].nodeValue : "";
+        const parentDescription= $(this).parent()[0].attributes[2].nodeValue ? $(this).parent()[0].attributes[2].nodeValue : "";
+        const colorPrice= $(this).parent()[0].attributes[2].nodeValue ? $(this).parent()[0].attributes[3].nodeValue : "";
+
+        if(parentTitle === "5-Strings/2-Humbucker" || parentTitle  === "5-Strings/1-Humbucker" || parentTitle === "4-Strings/2-Humbucker" || parentTitle  === "4-Strings/1-Humbucker"){
+            localStorage.setItem('parentTitle', parentTitle)
+        }
+        var finalPrice = 0;
+        if(localStorage.getItem('parentTitle') !== "4-Strings/2-Humbucker" && localStorage.getItem('parentTitle')  !== "4-Strings/1-Humbucker"){
+            basePrice = 2399;
+            finalPrice = basePrice + parseInt(colorPrice);
+        }
+        else{
+            basePrice = 2299;
+            finalPrice = basePrice + parseInt(colorPrice);
+        }
+        debugger;
+        $('.price').text("USD " + finalPrice + ",00");
+        $('.item-name-and-description').remove();
+        $('.guitar-type-title').text("");
+        $('.guitar-type-description').text("");
+        $('.swatches-menu').append(`<div class='item-name-and-description'> 
+            <h6 class='guitar-type-title'> `+ (parentTitle)+ `</h6>
+            <p class='guitar-type-description'> `+ (parentDescription)+` </p>
+        </div>`)
+        setConfiguration({ [$(this).attr('data-type-attibute')]: $(this).attr('data-type-value') });
+      });
+    }
+
+
+
+    /******************************************/
+    /* Function to Get Attributes 3Kit Player */
+    /******************************************/
+    async function getAttributesData() {
+      if (!window.threekitApi || !window.threekitApi.configurator)
+        throw new Error('threekitApi not setup');
+      const output = {};
+      const attributes = await window.threekitApi.player.configurator.getVisibleAttributes();
+      await Promise.all(
+        attributes.map(async (attr) => {
+          if (!['Asset', 'String'].includes(attr.type)) return output;
+          output[attr.name] = {
+            id: attr.name.toLowerCase().replace(' ', '-'),
+            type: attr.type,
+            label: attr.name
+          };
+          if (attr.type === 'String') {
+            output[attr.name].values = await Promise.all(
+              attr.values.map(async (val) => {
+                const { name, configurator } = await window.threekitApi.api.scene.fetch(initialSettings.assetId).then(() => window.threekitApi.api.scene.get({ id: initialSettings.assetId }));
+                const metadata = configurator.metadata;
+                const imagesUrl = metadata.find(metadataItem => metadataItem.name === attr.name + '_THUMBIMAGEURL') ? JSON.parse(metadata.find(metadataItem => metadataItem.name === attr.name + '_THUMBIMAGEURL').defaultValue) : '';
+                const typeTitle = metadata.find(metadataItem => metadataItem.name === attr.name + '_TITLE') ? JSON.parse(metadata.find(metadataItem => metadataItem.name === attr.name + '_TITLE').defaultValue) : '';
+                const typeDescription = metadata.find(metadataItem => metadataItem.name === attr.name + '_DESCRIPTION') ? JSON.parse(metadata.find(metadataItem => metadataItem.name === attr.name + '_DESCRIPTION').defaultValue) : '';
+                const typePrices = metadata.find(metadataItem => metadataItem.name === 'PRICES') ? JSON.parse(metadata.find(metadataItem => metadataItem.name === 'PRICES').defaultValue) : '';
+                return {
+                  id: val.toLowerCase().replace(' ', '-'),
+                  value: val,
+                  label: val,
+                  image: imagesUrl?.[val] !== undefined ? imagesUrl[val] : '',
+                  typeTitle: typeTitle?.[val] !== undefined ? typeTitle[val] : '',
+                  typeDescription: typeDescription?.[val] !== undefined ? typeDescription[val] : '',
+                  typePrices: typePrices?.[val] !== undefined ? typePrices[val] : ''
+                }
+              }));
+          }
+          else if (attr.type === 'Asset') {
+            output[attr.name].values = await Promise.all(
+              attr.values.map(async (val) => {
+                const { name, configurator } = await window.threekitApi.api.scene.fetch(val.assetId).then(() => window.threekitApi.api.scene.get({ id: val.assetId }));
+                const metadata = configurator.metadata;
+                const imangeUrl = metadata.find(metadataItem => metadataItem.name === "thumbImageUrl") ? JSON.parse(metadata.find(metadataItem => metadataItem.name === "thumbImageUrl").defaultValue) : '';
+                const typeTitle = metadata.find(metadataItem => metadataItem.name === "typeTitle") ? JSON.parse(metadata.find(metadataItem => metadataItem.name === "typeTitle").defaultValue) : '';
+                const typeDescription = metadata.find(metadataItem => metadataItem.name === "typeDescription") ? JSON.parse(metadata.find(metadataItem => metadataItem.name === "typeDescription").defaultValue) : '';
+                const typePrices = metadata.find(metadataItem => metadataItem.name === 'PRICES') ? JSON.parse(metadata.find(metadataItem => metadataItem.name === 'PRICES').defaultValue) : '';
+                if (name) {
+                  return {
+                    id: name.toLowerCase().replace(' ', '-'),
+                    assetId: val.assetId,
+                    value: name,
+                    label: name,
+                    image: imangeUrl !== '' ? imangeUrl : '',
+                    typeTitle: typeTitle !== '' ? typeTitle : '',
+                    typeDescription: typeDescription !== '' ? typeDescription : '',
+                    typePrices: typePrices?.[val] !== undefined ? typePrices[val] : ''
+                  }
+                }
+              }))
+          } else {
+            output[attr.name].values = await Promise.all(
+              attr.values.map(async (val) => {
+                if (!val || !val.assetId) return;
+                const opt = {
+                  id: val.name.toLowerCase().replace(' ', '-'),
+                  value: val.assetId,
+                  label: val.name
+                };
+
+                const dependency = new RegExp(/^_dependency/);
+                const re = new RegExp(/^_/);
+                const sceneApi = window.threekitApi.api.scene;
+                let node = sceneApi.get({ id: val.assetId });
+                if (!node) {
+                  await sceneApi.fetch(val.assetId);
+                  node = sceneApi.get({ id: val.assetId });
+                }
+                node.configurator.metadata.forEach((metadata) => {
+                  if (
+                    dependency.test(metadata.name) &&
+                    JSON.parse(metadata.defaultValue)
+                  )
+                    opt.dependencies = opt.dependencies
+                      ? opt.dependencies.push(JSON.parse(metadata.defaultValue))
+                      : [JSON.parse(metadata.defaultValue)];
+                  else if (metadata.name in metadataMap)
+                    opt[metadataMap[metadata.name]] = metadata.defaultValue;
+                  else if (re.test(metadata.name))
+                    opt[metadata.name.substring(1, metadata.name.length)] =
+                      metadata.defaultValue;
+                });
+                return opt;
+              })
+            );
+          }
+        })
+      );
+      return output;
+    };
+    /**************************************/
+    /* Function to Initialize 3Kit Player */
+    /**************************************/
+    function initializePlayer() {
+      var tkPlayer = document.getElementById("threekit-player");
+      return new Promise(async (resolve, reject) => {
+        if (!window.threekitPlayer)
+          reject('window.threekitPlayer object is missing threekitPlayer api');
+        if (!initialSettings.authToken)
+          reject('intialSettings object is missing the authToken');
+        if (!initialSettings.assetId)
+          reject('intialSettings object is missing the assetId');
+        if (!initialSettings.el) reject('intialSettings object is missing the el');
+
+        const threekitConfg = initialSettings;
+
+        const threekitApi = await window.threekitPlayer({
+          //   authToken: '01234567-89ab-cdef-0123-456789abcdef',
+          //   el: document.getElementById('player-root'),
+          //   stageId: '27b9cd7e-2bb2-4a18-b788-160743eb4b33',
+          //   assetId: 'e12a45f7-8b39-cd06-e12a-45f78b39cd06',
+          //   showConfigurator: true,
+          //   showAR: true,
+          //   initialConfiguration: {},
+          //   showShare: true,
+          ...threekitConfg,
+        });
+        if (!window.threekitPlayer) reject('Error initializing player');
+
+        /***** API SETUP START ***************************************************************/
+        //  Enables access to the threekit store api
+        threekitApi.enableApi('store');
+
+        //  Enables access to the threekit player api
+        player = threekitApi.enableApi('player');
+
+        window.threekitApi = {
+          api: threekitApi,
+          player,
+          configurator: player.getConfigurator(),
+        };
+        threekitApi.on(threekitApi.scene.PHASES.PRELOADED, () => {
+          //    Assigns default configurator to window object
+          window.threekitApi.configurator = threekitApi.player.getConfigurator();
+          initialSettings.onPreload
+            ? initialSettings.onPreload()
+            : buildCustomUI();
+        });
+        resolve(true);
+      });
+    };
+    /******************************************/
+    /* Function to Set Configuration 3Kit Player */
+    /******************************************/
+    async function setConfiguration(config) {
+      if (!config || !window.threekitApi) return;
+
+      if (typeof config !== 'object') return;
+
+      const updateConfig = Object.entries(config).reduce(
+        (output, [attribute, value]) =>
+          Object.assign(output, {
+            [attribute]: isUuid(value) ? { assetId: value } : value,
+          }),
+        {}
+      );
+
+      let keys = Object.keys(config);
+      // if (!keys[0].includes('Lettering')) {
+      //   document.getElementById('loader-container').style.display = 'block';
+      // }
+      await window.threekitApi.configurator.setConfiguration(updateConfig);
+    };
+    /******************************************/
+    /* Function to Set Configuration 3Kit Player */
+    /******************************************/
+    function getConfiguration() {
+      if (!window.threekitApi) return;
+      return window.threekitApi.configurator.getConfiguration();
+    };
+
+
+    function isUuid(str) {
+      // Regex to check valid GUID (Globally Unique Identifier).
+      const regex = /^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$/;
+
+      // Return true if the GUID (Globally Unique Identifier)
+      // matched the ReGex
+      if (str.match(regex)) {
+        return true;
+      }
+      else {
+        return false;
+      }
+    }
+
+            });
+        })
+    });
+    </script>
+
+    <?php } else { ?>
+
+        <script type="text/x-magento-init">
+    {
+        "[data-gallery-role=gallery-placeholder]": {
+            "mage/gallery/gallery": {
+                "mixins":["magnifier/magnify"],
+                "magnifierOpts": <?= /* @escapeNotVerified */ $block->getMagnifier() ?>,
+                "data": <?= /* @escapeNotVerified */ $block->getGalleryImagesJson() ?>,
+                "options": {
+                    "nav": "<?= /* @escapeNotVerified */ $block->getVar("gallery/nav") ?>",
+                    "loop": <?= /* @escapeNotVerified */ $block->getVar("gallery/loop") ? 'true' : 'false' ?>,
+                    "keyboard": <?= /* @escapeNotVerified */ $block->getVar("gallery/keyboard") ? 'true' : 'false' ?>,
+                    "arrows": <?= /* @escapeNotVerified */ $block->getVar("gallery/arrows") ? 'true' : 'false' ?>,
+                    "allowfullscreen": <?= /* @escapeNotVerified */ $block->getVar("gallery/allowfullscreen") ? 'true' : 'false' ?>,
+                    "showCaption": <?= /* @escapeNotVerified */ $block->getVar("gallery/caption") ? 'true' : 'false' ?>,
+                    "width": "<?= /* @escapeNotVerified */ $block->getImageAttribute('product_page_image_medium', 'width') ?>",
+                    "thumbwidth": "<?= /* @escapeNotVerified */ $block->getImageAttribute('product_page_image_small', 'width') ?>",
+                    <?php if ($block->getImageAttribute('product_page_image_small', 'height') || $block->getImageAttribute('product_page_image_small', 'width')): ?>
+                        "thumbheight": <?php /* @escapeNotVerified */ echo $block->getImageAttribute('product_page_image_small', 'height')
+                        ?: $block->getImageAttribute('product_page_image_small', 'width'); ?>,
+                    <?php endif; ?>
+                    <?php if ($block->getImageAttribute('product_page_image_medium', 'height') || $block->getImageAttribute('product_page_image_medium', 'width')): ?>
+                        "height": <?php /* @escapeNotVerified */ echo $block->getImageAttribute('product_page_image_medium', 'height')
+                        ?: $block->getImageAttribute('product_page_image_medium', 'width'); ?>,
+                    <?php endif; ?>
+                    <?php if ($block->getVar("gallery/transition/duration")): ?>
+                        "transitionduration": <?= /* @escapeNotVerified */ $block->getVar("gallery/transition/duration") ?>,
+                    <?php endif; ?>
+                    "transition": "<?= /* @escapeNotVerified */ $block->getVar("gallery/transition/effect") ?>",
+                    "navarrows": <?= /* @escapeNotVerified */ $block->getVar("gallery/navarrows") ? 'true' : 'false' ?>,
+                    "navtype": "<?= /* @escapeNotVerified */ $block->getVar("gallery/navtype") ?>",
+                    "navdir": "<?= /* @escapeNotVerified */ $block->getVar("gallery/navdir") ?>"
+                },
+                "fullscreen": {
+                    "nav": "<?= /* @escapeNotVerified */ $block->getVar("gallery/fullscreen/nav") ?>",
+                    "loop": <?= /* @escapeNotVerified */ $block->getVar("gallery/fullscreen/loop") ? 'true' : 'false' ?>,
+                    "navdir": "<?= /* @escapeNotVerified */ $block->getVar("gallery/fullscreen/navdir") ?>",
+                    "navarrows": <?= /* @escapeNotVerified */ $block->getVar("gallery/fullscreen/navarrows") ? 'true' : 'false' ?>,
+                    "navtype": "<?= /* @escapeNotVerified */ $block->getVar("gallery/fullscreen/navtype") ?>",
+                    "arrows": <?= /* @escapeNotVerified */ $block->getVar("gallery/fullscreen/arrows") ? 'true' : 'false' ?>,
+                    "showCaption": <?= /* @escapeNotVerified */ $block->getVar("gallery/fullscreen/caption") ? 'true' : 'false' ?>,
+                    <?php if ($block->getVar("gallery/fullscreen/transition/duration")): ?>
+                        "transitionduration": <?= /* @escapeNotVerified */ $block->getVar("gallery/fullscreen/transition/duration") ?>,
+                    <?php endif; ?>
+                    "transition": "<?= /* @escapeNotVerified */ $block->getVar("gallery/fullscreen/transition/effect") ?>"
+                },
+                "breakpoints": <?= /* @escapeNotVerified */ $block->getBreakpoints() ?>
+            }
+        }
+    }
+</script>
+
+<!--Fix for jumping content. Loader must be the same size as gallery.-->
+
+    <?php } ?>
